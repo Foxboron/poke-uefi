@@ -46,7 +46,7 @@ type EFI_GUID =
 
 type WIN_CERTIFICATE =
   struct {
-    uint32 dwLength;
+    offset<uint32,B> dwLength;
     uint16 wRevision;
     uint16 wCertificateType
       : wCertificateType in [WIN_CERT_TYPE_EFI_GUID, WIN_CERT_TYPE_EFI_PKCS115, WIN_CERT_TYPE_PKCS_SIGNED_DATA];
@@ -56,7 +56,7 @@ type WIN_CERTIFICATE_UEFI_GUID =
    struct {
      WIN_CERTIFICATE Hdr;
      EFI_GUID CertType;
-     uint8[Hdr.dwLength#B - Hdr'size - CertType'size] CertData;
+     uint8[Hdr.dwLength - Hdr'size - CertType'size] CertData;
 };
 
 type EFI_VARIABLE_AUTHENTICATION_2 =
@@ -68,15 +68,15 @@ type EFI_VARIABLE_AUTHENTICATION_2 =
 type EFI_SIGNATURE_LIST =
   struct {
     EFI_GUID SignatureType;
-    uint32 SignatureListSize;
+    offset<uint32,B> SignatureListSize;
     uint32 SignatureHeaderSize;
-    uint32 SignatureSize;
+    offset<uint32,B> SignatureSize;
     uint8[SignatureHeaderSize] SignatureHeader;
 
     type Signature = 
     struct {
         EFI_GUID SignatureOwner;
-        uint8[SignatureSize#B - SignatureOwner'size] SignatureData;
+        uint8[SignatureSize - SignatureOwner'size] SignatureData;
     };
 
     Signature[SignatureListSize/SignatureSize] Signatures;
