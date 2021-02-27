@@ -1,0 +1,90 @@
+var WIN_CERT_TYPE_PKCS_SIGNED_DATA = 0x0002,
+    WIN_CERT_TYPE_EFI_PKCS115      = 0x0EF0,
+    WIN_CERT_TYPE_EFI_GUID         = 0x0EF1;
+
+type EFI_TIME =
+  struct
+  {
+    /* // 1900 – 9999 */
+    uint16 Year;
+
+    /* // 1 – 12 */
+    uint8 Month;
+
+    /* // 1 – 31 */
+    uint8 Day;
+
+    /* // 0 – 23 */
+    uint8 Hour;
+
+    /* // 0 – 59 */
+    uint8 Minute;
+
+    /* // 0 – 59 */
+    uint8 Second;
+
+    uint8 Pad1;
+
+    /* // 0 – 999,999,999 */
+    uint32 Nanosecond;
+
+    /* // -1440 to 1440 or 2047 */
+    uint16 TimeZone;
+
+    uint8 Daylight;
+
+    uint8 Pad2;
+};
+
+type EFI_GUID =
+  struct {
+    uint32 Data1;
+    uint16 Data2;
+    uint16 Data3;
+    uint8[8] Data4;
+};
+
+type WIN_CERTIFICATE =
+  struct {
+    uint32 dwLength;
+    uint16 wRevision;
+    uint16 wCertificateType
+      : wCertificateType in [WIN_CERT_TYPE_EFI_GUID, WIN_CERT_TYPE_EFI_PKCS115, WIN_CERT_TYPE_PKCS_SIGNED_DATA];
+};
+
+type WIN_CERTIFICATE_UEFI_GUID =
+   struct {
+     WIN_CERTIFICATE Hdr;
+     EFI_GUID CertType;
+     uint8[Hdr.dwLength#B - Hdr'size - CertType'size] CertData;
+};
+
+type EFI_VARIABLE_AUTHENTICATION_2 =
+  struct {
+    EFI_TIME TimeStamp;
+    WIN_CERTIFICATE_UEFI_GUID AuthInfo;
+};
+
+type EFI_SIGNATURE_LIST =
+  struct {
+    EFI_GUID SignatureType;
+    uint32 SignatureListSize;
+    uint32 SignatureHeaderSize;
+    uint32 SignatureSize;
+    uint8[SignatureHeaderSize] SignatureHeader;
+
+    type Signature = 
+    struct {
+        EFI_GUID SignatureOwner;
+        uint8[SignatureSize#B - SignatureOwner'size] SignatureData;
+    };
+
+    Signature[SignatureListSize/SignatureSize] Signatures;
+  };
+
+
+type DBX = 
+  struct {
+    EFI_VARIABLE_AUTHENTICATION_2 Auth;
+    EFI_SIGNATURE_LIST[] lists;
+  };

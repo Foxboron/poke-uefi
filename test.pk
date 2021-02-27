@@ -1,0 +1,3 @@
+.load uefi.pk
+.file dbxupdate_x64.bin
+var dbx = DBX @ 0#B
