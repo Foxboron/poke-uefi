@@ -34,7 +34,13 @@ type EFI_TIME =
     uint8 Daylight;
 
     uint8 Pad2;
+
+     method _print = void:
+        {
+            printf "%u16d-%u8d-%u8dT%u8d:%u8d:%u8d", Year, Month, Day, Hour, Minute, Second;
+        }
 };
+
 
 type EFI_GUID =
   struct {
@@ -42,7 +48,19 @@ type EFI_GUID =
     uint16 Data2;
     uint16 Data3;
     uint8[8] Data4;
+
+     method _print = void:
+        {
+            printf "#<EFI_GUID: %u32x-%u16x-%u16x-%u8x%u8x-%u8x%u8x>", Data1, Data2, Data3, Data4[2], Data4[3], Data4[0], Data4[1];
+        }
 };
+
+fun fmt_efiguid = (EFI_GUID guid) void {
+    printf "EFI_GUID: %u32x-%u16x-%u16x-%u8x%u8x-%u8x%u8x", guid.Data1, guid.Data2, guid.Data3,
+                                                            guid.Data4[2], guid.Data4[3],
+                                                            guid.Data4[0], guid.Data4[1];
+}
+
 
 type WIN_CERTIFICATE =
   struct {
@@ -50,6 +68,21 @@ type WIN_CERTIFICATE =
     uint16 wRevision;
     uint16 wCertificateType
       : wCertificateType in [WIN_CERT_TYPE_EFI_GUID, WIN_CERT_TYPE_EFI_PKCS115, WIN_CERT_TYPE_PKCS_SIGNED_DATA];
+
+     method _print = void:
+        {
+            print "#<";
+            print "wCertificateType: ";
+            if (wCertificateType == WIN_CERT_TYPE_EFI_GUID)
+              print "WIN_CERT_TYPE_EFI_GUID ";
+            if (wCertificateType == WIN_CERT_TYPE_EFI_PKCS115)
+              print "WIN_CERT_TYPE_EFI_PKCS115 ";
+            if (wCertificateType == WIN_CERT_TYPE_PKCS_SIGNED_DATA)
+              print "WIN_CERT_TYPE_PKCS_SIGNED_DATA ";
+            printf "wRevision: %u16d ", wRevision;
+            printf "dwLength: %u32d", dwLength/#B;
+            print ">";
+        }
 };
 
 type WIN_CERTIFICATE_UEFI_GUID =
