@@ -1,0 +1,37 @@
+/* uefi-common.pk - Common structs.  */
+
+/* Copyright (C) 2021 Morten Linderud */
+
+/* This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+type EFI_GUID =
+  struct {
+    uint32 Data1;
+    uint16 Data2;
+    uint16 Data3;
+    uint8[8] Data4;
+
+     method _print = void:
+        {
+            printf "#<EFI_GUID: %u32x-%u16x-%u16x-%u8x%u8x-%u8x%u8x>", Data1, Data2, Data3, Data4[2], Data4[3], Data4[0], Data4[1];
+        }
+};
+
+fun fmt_efiguid = (EFI_GUID guid) void: 
+    {
+    printf "EFI_GUID: %u32x-%u16x-%u16x-%u8x%u8x-%u8x%u8x", guid.Data1, guid.Data2, guid.Data3,
+                                                            guid.Data4[2], guid.Data4[3],
+                                                            guid.Data4[0], guid.Data4[1];
+}
